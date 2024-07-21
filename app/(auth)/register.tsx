@@ -15,13 +15,21 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     // Implement registration logic using async storage
 
-    registerUser({
+    const status = await registerUser({
       username,
       password,
       email,
       location,
       setLocation,
+      router,
     });
+    console.log(status);
+
+    if (status === "Success") {
+      router.push("/home");
+    } else {
+      alert("Error registering user");
+    }
   };
 
   return (

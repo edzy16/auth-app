@@ -8,6 +8,7 @@ type RegisterUserProps = {
   email: string;
   location: any;
   setLocation: any;
+  router: any;
 };
 
 export const registerUser = async ({
@@ -16,13 +17,14 @@ export const registerUser = async ({
   email,
   location,
   setLocation,
+  router,
 }: RegisterUserProps) => {
-  const router = useRouter();
+  console.log("Registering user:", username, password, email, location);
   try {
     if (!location) {
-      alert("Please verify your location");
+      // alert("Please verify your location");
       await verifyLocation(setLocation);
-      return;
+      // return;
     }
     // Perform any necessary validation checks on the input values
 
@@ -30,15 +32,14 @@ export const registerUser = async ({
     await AsyncStorage.setItem("username", username);
     await AsyncStorage.setItem("password", password);
     await AsyncStorage.setItem("email", email);
-    await AsyncStorage.setItem("location", JSON.stringify(location));
 
-    // Redirect to the login screen
-    router.push("/(auth)/index");
+    return "Success";
   } catch (error) {
     console.error("Error registering user:", error);
+    return "Error";
   }
 };
-const verifyLocation = async (setLocation: any) => {
+export const verifyLocation = async (setLocation: any) => {
   let { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
     alert("Permission to access location was denied");
@@ -46,12 +47,13 @@ const verifyLocation = async (setLocation: any) => {
   }
 
   let locationData = await Location.getCurrentPositionAsync({});
+  await AsyncStorage.setItem("location", JSON.stringify(locationData));
+
   setLocation(locationData);
   alert("Location verified");
 };
 
 export const loginUser = async (username: string, password: string) => {
-  const router = useRouter();
   try {
     // Perform any necessary validation checks on the input values
 
@@ -59,11 +61,13 @@ export const loginUser = async (username: string, password: string) => {
     const storedUsername = await AsyncStorage.getItem("username");
     const storedPassword = await AsyncStorage.getItem("password");
 
+    console.log("Stored user data:", storedUsername, storedPassword);
+
     if (username === storedUsername && password === storedPassword) {
-      // Redirect to the home screen
-      router.push("/home");
+      return "Success";
     } else {
-      alert("Invalid username or password");
+      // alert("Invalid username or password");
+      return "Error";
     }
   } catch (error) {
     console.error("Error logging in:", error);

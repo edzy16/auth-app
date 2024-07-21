@@ -10,9 +10,14 @@ export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Implement username/password login logic
-    loginUser(username, password);
+    const status = await loginUser(username, password);
+    if (status === "Success") {
+      router.push("/home");
+    } else {
+      alert("Error logging in");
+    }
     // router.push("/home");
   };
 
